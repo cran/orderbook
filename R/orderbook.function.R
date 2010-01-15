@@ -39,7 +39,7 @@ orderbook <- function(file  = NULL)
 
         ## Read header file
 
-         x <- scan(file, nline = 1, sep = ",", what = "character",
+         x <- scan(file, nlines = 1, sep = ",", what = "character",
               quiet = TRUE)
 
         ## Close file

@@ -60,7 +60,7 @@ stopifnot(isTRUE(identical(0.01, round(spread(ob), 2))))
 
 ids = c("6487521", "6552654", "6598723")
 
-stopifnot(isTRUE(identical(ids, ob["11.41"]$id)))
+stopifnot(isTRUE(all(ids %in% ob["11.41"]$id)))
 
 ## Midpoint Returns test
 

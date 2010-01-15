@@ -129,7 +129,7 @@
     ## Skip to wherever the other function told it to skip to in the
     ## data file.
 
-    x <- scan(file, nline = 1, sep = ",", what = "character",
+    x <- scan(file, nlines = 1, sep = ",", what = "character",
               quiet = TRUE, skip = skip)
 
     ## Increment because now we are at the first line after skip.
@@ -141,7 +141,7 @@
 
     while(!identical(length(x), 0) && as.numeric(x[2]) <= n){
 
-        x <- scan(file, nline = 1, sep = ",", what = "character",
+        x <- scan(file, nlines = 1, sep = ",", what = "character",
                   quiet = TRUE)
         i <- i + 1
 
@@ -163,7 +163,7 @@
 
     ## Skip to 1 before the row in question, then read the line
 
-    x <- scan(file, nline = 1, sep = ",", what = "character",
+    x <- scan(file, nlines = 1, sep = ",", what = "character",
               quiet = TRUE, skip = n - 1)
 
     ## Close the connection
@@ -183,14 +183,14 @@
 
     file <- file(file, open="r")
 
-    x <- scan(file, nline = 1, sep = ",", what = "character",
+    x <- scan(file, nlines = 1, sep = ",", what = "character",
               quiet = TRUE, skip = n)
 
     n <- n + 1
 
     while(!identical(length(x), 0) & !isTRUE(x[1] %in% "T")){
 
-        x <- scan(file, nline = 1, sep = ",", what = "character",
+        x <- scan(file, nlines = 1, sep = ",", what = "character",
                   quiet = TRUE)
 
        	n <- n + 1
@@ -230,7 +230,7 @@
 
     file <- file(file, open = "r")
 
-    x <- scan(file, nline = 1, sep = ",", what = "character", quiet =
+    x <- scan(file, nlines = 1, sep = ",", what = "character", quiet =
               TRUE, skip = file.index)
 
     ## While there are still lines to read and less than n lines have
@@ -278,7 +278,7 @@
 
         ## Read in the next line.
 
-        x <- scan(file, nline = 1, sep = ",", what = "character",
+        x <- scan(file, nlines = 1, sep = ",", what = "character",
                   quiet = TRUE)
 
     }

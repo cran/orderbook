@@ -1,0 +1,135 @@
+\documentclass[a4paper]{report}
+\usepackage[round]{natbib}
+
+
+\usepackage{Rnews}
+\usepackage{fancyvrb}
+\usepackage{Sweave}
+
+\DefineVerbatimEnvironment{Sinput}{Verbatim}{fontsize=\small,fontshape=sl}
+\DefineVerbatimEnvironment{Soutput}{Verbatim}{fontsize=\small}
+\DefineVerbatimEnvironment{Scode}{Verbatim}{fontsize=\small,fontshape=sl}
+
+
+\bibliographystyle{abbrvnat}
+
+\begin{document}
+\begin{article}
+
+\title{Analyzing an Electronic Limit Order Book}
+\author{David Kane, Andrew Liu and Khanh Nguyen}
+
+%%\VignetteIndexEntry{Using the orderbook package}
+%%\VignetteDepends{orderbook}
+
+\maketitle
+
+
+\setkeys{Gin}{width=0.95\textwidth}
+
+\section{Introduction}
+
+The \pkg{orderbook} package provides facilities for exploring and
+visualizing the data associated with an order book: the electronic
+collection of the outstanding limit orders for a financial instrument,
+e.g. a stock. A \dfn{limit order} is an order to buy or sell a given
+quantity of stock at a specified limit price or better. The
+\dfn{size} is the number of shares to be bought or sold.  An order
+remains in the order book until fully executed, i.e. until its size is
+zero as a result of trades. Partial executions occur as a result of
+trades for less than the entire size of the order.
+
+Consider a simple order book containing five limit orders: sell 150
+shares of IBM at \$11.11, sell 150 shares of IBM at \$11.08, buy 100
+shares of IBM at \$11.05, buy 200 shares of IBM at \$11.05, and buy
+200 shares of IBM at \$11.01.
+
+\begin{verbatim}
+                 Price          Ask Size
+
+                 $11.11         150
+                 $11.08         100
+     300         $11.05
+     200         $11.01
+
+Bid Size         Price
+\end{verbatim}
+
+\noindent Orders on the \dfn{bid} (\dfn{ask}) side represent orders to buy
+(sell). The price levels are \$11.11, \$11.08, \$11.05, and
+\$11.01. The \dfn{best bid} at \$11.05 (highest bid price) and the
+\dfn{best ask} at \$11.08 (lowest ask price) make up the \dfn{inside
+  market}. The \dfn{spread} (\$0.03) is the difference between the
+best bid and best ask. The \dfn{midpoint} (\$11.065) is the average
+of the best bid and best ask.
+
+There are four types of messages that traders can submit to an order
+book: \dfn{add}, \dfn{cancel}, \dfn{cancel/replace}, and
+\dfn{market order}. A trader can \dfn{add} a limit order in to the
+order book.  She can also \dfn{cancel} an order and remove it from
+the order book. If a trader wants to reduce the size of her order, she
+can issue a \dfn{cancel/replace}, which cancels the order, then
+immediately replaces it with another order at the same price, but with
+a lower size. Every limit order is assigned a unique ID so that cancel
+and cancel/replace orders can identify the corresponding limit
+order. A \dfn{market order} is an order to immediately buy or sell a
+quantity of stock at the best available prices. A trade occurs when a
+market order ``hits'' a limit order on the other side of the inside
+market.
+
+All orders have timestamps indicating the time at which they were
+accepted into the order book. The timestamp determines the \dfn{time
+  priority} of an order. Earlier orders are executed before later
+orders. For example, suppose that the order to buy 100 shares at
+\$11.05 was submitted before the order to buy 200 shares at
+\$11.05. Now suppose a market order selling 200 shares is submitted to
+the order book. The limit order for 100 shares will be executed
+because it is at the front of the queue at the best bid. Then, 100
+shares of the order with 200 total shares will be executed, since it
+was second in the queue. 100 shares of the 200 share order remain in
+the order book at \$11.05.
+
+A market order for more shares than the size at the inside market will
+execute at worse price levels until it is complete. For example, if a
+market order to buy 200 shares is submitted to the order book, the
+order at \$11.08 will be fully executed. Since there are no more
+shares available at that price level, 100 shares at the \$11.11 price
+level will be transacted to complete the market order. An order to
+sell 50 shares at \$11.11 will remain in the order book. Executing
+these two market orders (a sell of 200 shares and a buy of 200 shares)
+on our hypothetical order book results in a new state for the order
+book.
+
+\begin{verbatim}
+                 Price          Ask Size
+
+                 $11.11         50
+     100         $11.05
+     200         $11.01
+
+Bid Size         Price
+\end{verbatim}
+
+Note that cancel/replace orders can lower the size of an order, but
+not increase it. Cancel/replace orders maintain the time priority of
+the original order, so if size increases were allowed, traders with
+orders at the highest time priority for a price level could
+perpetually increase the size of their order, preventing others from
+being able to transact stock using limit orders at that price
+level. See \cite{johnson:barry} for more details on the order book.
+
+\section{Example}
+
+NVIDIA is a graphics processing unit and chipset developer with ticker
+symbol NVDA. Consider the order book for NVDA at a leading electronic
+exchange on June 8, 2010. We create the \texttt{orderbook} object by
+specifying the location of our data file.
+
+\begin{Schunk}
+\begin{Sinput}
+> library(orderbook)
+> filename <- system.file("extdata",
++                         "sample.txt",
++                         package = "orderbook")
+> ob <- orderbook(file = filename)
+> ob <- read.orders(ob, 10000)
