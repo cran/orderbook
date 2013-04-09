@@ -7,7 +7,7 @@
 \description{Returns the state of the orderbook at the specified time.}
 
 \usage{
-object = read.time(object, n)
+read.time(object, n)
 }
 \arguments{
   \item{object}{Object of class \code{orderbook}}

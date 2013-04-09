@@ -168,11 +168,11 @@
         ans <- yscale.components.default(...)
         ans$right <- ans$left
 
-        ans$left$labels$at <- ybid.at
+        ans$left$labels$at <- seq(n)
         ans$left$labels$labels <- formatC(ybid.at, format = "f",
                                           digits = 2)
 
-        ans$right$labels$at <- yask.at
+        ans$right$labels$at <- seq(n)
         ans$right$labels$labels <- formatC(yask.at, format = "f",
                                            digits = 2)
 
